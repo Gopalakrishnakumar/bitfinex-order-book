@@ -1,0 +1,73 @@
+@import "../../variables.scss";
+
+.order-container {
+    margin: 0 auto;
+    margin-top: 10vh;
+    max-height: 80vh;
+    display: flex;
+    justify-content: center;
+    font-family: Roboto, "Sans-Serif";
+    font-size: $font-size;
+    flex-direction: column;
+    border: 1px solid grey;
+    border-radius: 4px;
+    background-color: $background-color;
+    color: $font-color;
+    max-width: 60vw;
+    .bar {
+        margin: 5px;
+        text-transform: uppercase;
+        .header {
+            font-size: $heading;
+        }
+        i {
+            float: right;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        &.status-bar {
+            bottom: 0;
+            i {
+                cursor: default;
+                &.online {
+                    color: $online;
+                }
+                &.offline {
+                    color: $offline;
+                }
+                &.reconnect {
+                    color: $reconnect;
+                }
+            }
+        }
+    }
+}
+
+.chart-container {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    justify-content: center;
+    .table-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+}
+
+.header {
+    color: $header-color;
+    text-transform: uppercase;
+}
+
+.config {
+    input {
+        margin: 5px;
+    }
+    label {
+        font-weight: normal;
+    }
+}

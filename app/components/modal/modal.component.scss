@@ -1,0 +1,12 @@
+@import "../../variables.scss";
+
+.modal {
+    .modal-content,
+    .btn-close {
+        background-color: $background-color;
+        color: $font-color;
+        font-weight: bolder;
+        line-height: $heading;
+        font-size: $heading;
+    }
+}

@@ -1,0 +1,12 @@
+@import "../../variables.scss";
+
+.grid {
+    width: 50%;
+    padding: 0 10px;
+    .row {
+        margin: 0;
+        &:hover:not(.header) {
+            background-color: $hover-color;
+        }
+    }
+}
