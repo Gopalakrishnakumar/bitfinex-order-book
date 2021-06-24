@@ -49,32 +49,6 @@ const socketRegister = store => {
             wss.close();
         }
     }
-
-    // socket.io.on('reconnect_attempt', () => {
-    //     console.log('socket reconnecting...');
-    //     store.dispatch({ type: ActionTypes.SOCKET, data: 0 });
-    // });
-
-    // socket.io.on('reconnect', () => {
-    //     console.log('socket reconnected');
-    //     store.dispatch({ type: ActionTypes.SOCKET, data: 1 });
-    // });
 }
-
-//snapshot
-//[17082,[[7254.7,3,3.3]]]
-// [
-//     CHANNEL_ID,
-//     [
-//       [
-//         PRICE,
-//         COUNT,
-//         AMOUNT
-//       ],
-//       ...
-//     ]
-//   ]
-//update
-//[315,[36827,1,-0.09534685]]
 
 export default socketRegister;

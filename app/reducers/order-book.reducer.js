@@ -48,61 +48,6 @@ const OrderBookReducer = (state = getInitialState(), action) => {
             var newState = { bids: state.bids, asks: { ...updateEntry({ ...state.asks }, priceLevel, count, amount) } };
             saveState(newState);
             return { ...state, ...newState };
-        // case ActionTypes.BIDUPDATE:
-        //     var priceLevel = action.data[1][0];
-        //     var count = action.data[1][1];
-        //     //let amount = action.data[1][2];
-        //     var { bids } = state;
-        //     var bidIdx = bids.findIndex(el => el[0] == priceLevel);
-        //     if (count > 0) {
-        //         if (bidIdx >= 0) {
-        //             bids[bidIdx] = action.data[1];
-        //         } else {
-        //             bids.push(action.data[1]);
-        //         }
-        //     } else {
-        //         bids.splice(bidIdx, 1);
-        //     }
-        //     return Object.assign({}, state, { bids: [...bids] });
-        // case ActionTypes.ASKUPDATE:
-        //     var priceLevel = action.data[1][0];
-        //     var count = action.data[1][1];
-        //     //let amount = action.data[1][2];
-        //     var { asks } = state;
-        //     var askIdx = asks.findIndex(el => el[0] == priceLevel);
-        //     if (count > 0) {
-        //         if (askIdx >= 0) {
-        //             asks[askIdx] = action.data[1];
-        //         } else {
-        //             asks.push(action.data[1]);
-        //         }
-        //     } else {
-        //         asks.splice(askIdx, 1);
-        //     }
-        //     return Object.assign({}, state, { asks: [...asks] });
-        // case ActionTypes.MESSAGE:
-        //     let message = JSON.parse(action.data);
-        //     if (!message.event) {
-        //         if (state.channelId) {
-        //             let { bids, asks } = state.book;
-        //             let priceLevel = message[1][0];
-        //             let count = message[1][1];
-        //             let amount = message[1][2];
-        //             if (count > 0) {
-        //                 let entry = amount > 0 && bids || asks;
-        //                 let entryIdx = entry.findIndex(el => el[0] == priceLevel);
-        //                 if (entryIdx > -1) {
-        //                     entry[entryIdx] = message[1];
-        //                 } else {
-        //                     entry.push(message[1]);
-        //                 }
-        //             } else {
-        //                 amount == 1 && (bids = bids.filter(el => el[0] == priceLevel)) || (asks = asks.filter(el => el[0] == priceLevel))
-        //             }
-        //             return Object.assign({}, state, { book: { bids, asks } });
-        //         }
-        //     }
-        //     return state;
         default:
             return state;
     }
