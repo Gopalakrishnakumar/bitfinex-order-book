@@ -5,12 +5,12 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import { createStore, applyMiddleware } from 'redux';
 import reducer from './reducers';
-import socketRegister from './websocketMiddleware';
-import $ from 'jquery'; 
+import $ from 'jquery';
+import cacheLoader from './cacheLoaderMiddleware';
 import "./app.scss";
 
-const store = createStore(reducer, applyMiddleware(thunk));
-socketRegister(store);
+const store = createStore(reducer, applyMiddleware(thunk, cacheLoader('orderBook')));
+
 ReactDOM.render(<Provider store={store}>
     <HomeComponent />
 </Provider>, document.getElementById('app'));

@@ -1,7 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
 import actions from "../../actions/actions";
+import socketRegister from "../../websocketMiddleware";
+import BarComponent from "../bar/bar.component";
+import ChartConfigComponent from "../chart-config/chart-config.component";
 import ChartComponent from "../chart/chart.component";
+import LoadingSpinnerComponent from "../loading-spinner/loading-spinner.component";
 import ModalComponent from "../modal/modal.component";
 import TableComponent from "../table/table.component";
 import './home.component.scss';
@@ -33,40 +37,58 @@ class HomeComponent extends React.Component {
             ]
         };
         this.state = {
-            chartProp: 'total',
-            columnOrder: 'order1'
-        };
+            showModal: false,
+            zoomFactor: 1
+        }
     }
 
     componentDidMount() {
-        this.props.greet();
+        this.socket = socketRegister(this.props);
     }
 
-    onChartPropClick = (e) => {
-        this.setState({ chartProp: e.target.value });
+    componentDidUpdate(prevProps) {
+        if (prevProps.precision !== this.props.precision) {
+            this.socket && this.socket.close();
+            this.props.clearSnapshot();
+            this.socket = socketRegister(this.props);
+        }
     }
 
-    onColumnOrderClick = (e) => {
-        this.setState({ columnOrder: e.target.value });
+    onPrecisionControlClick = (flag) => {
+        if ((flag && this.props.precision < 4) || (!flag && this.props.precision > 0)) {
+            this.props.setPrecision(flag);
+        }
     }
 
     render() {
         let sortedBids = Object.entries(this.props.bids)?.sort((a, b) => a[1].order - b[1].order);
         let sortedAsks = Object.entries(this.props.asks)?.sort((a, b) => a[1].order - b[1].order);
         return <>
-            <h3>{this.props.message}</h3>
+            <nav><span className='logo'>Book Tracker</span></nav>
             <div className='container'>
                 <div className='order-container'>
                     <div className='bar'>
                         <span className='header'>Order Book BTC/USD</span>
+                        <i className='bi bi-zoom-in' title='Zoom in book depth visualization' onClick={() => this.setState({ zoomFactor: this.state.zoomFactor + 0.2 })}></i>
+                        <i className='bi bi-zoom-out' onClick={() => this.setState({ zoomFactor: this.state.zoomFactor - 0.2 })} title='Zoom out book depth visualization'></i>
                         <i className='bi bi-gear-fill' onClick={() => this.setState({ showModal: true })} title='Interface Settings'></i>
+                        <i className={`bi bi-plus large ${this.props.precision === 0 ? 'disabled' : ''}`} title='Increase Precision' onClick={this.onPrecisionControlClick.bind(this, false)}></i>
+                        <i className={`bi bi-minus large ${this.props.precision === 4 ? 'disabled' : ''}`} title='Decrease Precision' onClick={this.onPrecisionControlClick.bind(this, true)}>-</i>
                     </div>
-                    <div className='chart-container'>
-                        <ChartComponent key='bid' id='bid' data={sortedBids?.map(el => el[1][this.state.chartProp])} color={'green'} height={484} width={400} swap={false} />
-                        <ChartComponent key='ask' id='ask' data={sortedAsks?.map(el => el[1][this.state.chartProp])} color={'red'} height={484} width={400} swap={true} />
+                    <div className='book-container'>
+                        <div className='charts-container'>
+                            <div className='chart left-chart'>
+                                {(sortedBids?.length === 0 || !sortedBids) && <LoadingSpinnerComponent />}
+                                {sortedBids?.map(el => <BarComponent id={el[0]} value={el[1][this.props.chartProp]} maxValue={this.props.maxBid} color='green' key={'left-bar-' + el[0]} zoomFactor={this.state.zoomFactor} />)}
+                            </div>
+                            <div className='chart right-chart'>
+                                {(sortedAsks?.length === 0 || !sortedAsks) && <LoadingSpinnerComponent />}
+                                {sortedAsks?.map(el => <BarComponent id={el[0]} value={el[1][this.props.chartProp]} maxValue={this.props.maxAsk} color='red' key={'right-bar-' + el[0]} zoomFactor={this.state.zoomFactor} />)}
+                            </div>
+                        </div>
                         <div className='table-container'>
-                            <TableComponent columns={this.columns[this.state.columnOrder]} data={sortedBids.map(el => ({ price: el[0], ...el[1] }))} reverse={false} />
-                            <TableComponent columns={this.columns[this.state.columnOrder]} data={sortedAsks.map(el => ({ price: el[0], ...el[1] }))} reverse={true} />
+                            <TableComponent id='table-1' columns={this.columns[this.props.columnOrder]} data={sortedBids.map(el => ({ price: el[0], ...el[1] }))} reverse={false} key='table-1' keyColumn='price' />
+                            <TableComponent id='table-2' columns={this.columns[this.props.columnOrder]} data={sortedAsks.map(el => ({ price: el[0], ...el[1] }))} reverse={true} key='table-2' keyColumn='price' />
                         </div>
                     </div>
                     <div className='bar status-bar'>
@@ -78,27 +100,19 @@ class HomeComponent extends React.Component {
                 </div>
             </div>
             {this.state.showModal && <ModalComponent title={'Configuration'} onClose={() => this.setState({ showModal: false })}>
-                <div className='config'>
-                    <h5>Book Depth Visualization:</h5>
-                    <input id='total' type='radio' value='total' name='chartProp' onChange={this.onChartPropClick} checked={this.state.chartProp === 'total'} />
-                    <label htmlFor='total'>Cumulative (default)</label><br />
-                    <input id='amount' type='radio' value='amount' name='chartProp' onChange={this.onChartPropClick} checked={this.state.chartProp === 'amount'} />
-                    <label htmlFor='amount'>Amount</label><br /><br />
-                    <h5>Column Order:</h5>
-                    <input id='order1' type='radio' value='order1' name='columnOrder' onChange={this.onColumnOrderClick} checked={this.state.columnOrder === 'order1'} />
-                    <label htmlFor='order1'><span className='text-success'>Count Amount Total Price</span> <span className='text-danger'>Price Total Amount Count</span></label><br />
-                    <input id='order2' type='radio' value='order2' name='columnOrder' onChange={this.onColumnOrderClick} checked={this.state.columnOrder === 'order2'} />
-                    <label htmlFor='order2'><span className='text-success'>Count Price Amount Total</span> <span className='text-danger'>Total Amount Price Count</span></label><br />
-                    <input id='order3' type='radio' value='order3' name='columnOrder' onChange={this.onColumnOrderClick} checked={this.state.columnOrder === 'order3'} />
-                    <label htmlFor='order3'><span className='text-success'>Count Total Price Amount</span> <span className='text-danger'>Amount Price Total Count</span></label><br />
-                </div>
+                <ChartConfigComponent />
             </ModalComponent>}
         </>
     }
 }
 
-const mapStateToProps = state => ({ message: state.message, socketStatus: state.socketStatus, bids: state.bids, asks: state.asks });
+const mapStateToProps = state => ({ ...state });
 const mapDispatchToProps = dispatch => ({
-    greet: () => dispatch(actions.greet())
+    updateAsk: data => dispatch(actions.updateAsk(data)),
+    updateBid: data => dispatch(actions.updateBid(data)),
+    setSocketStatus: data => dispatch(actions.setSocketStatus(data)),
+    addSnapshot: data => dispatch(actions.addSnapshot(data)),
+    setPrecision: data => dispatch(actions.setPrecision(data)),
+    clearSnapshot: () => dispatch(actions.clearSnapshot())
 });
 export default connect(mapStateToProps, mapDispatchToProps)(HomeComponent);

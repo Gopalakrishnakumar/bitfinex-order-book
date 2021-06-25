@@ -3,20 +3,21 @@
 .order-container {
     margin: 0 auto;
     margin-top: 10vh;
-    max-height: 80vh;
+    height: 70vh;
     display: flex;
     justify-content: center;
     font-family: Roboto, "Sans-Serif";
     font-size: $font-size;
     flex-direction: column;
-    border: 1px solid grey;
+    padding: 5px;
     border-radius: 4px;
-    background-color: $background-color;
+    background-color: $primary-background-color;
     color: $font-color;
     max-width: 60vw;
     .bar {
         margin: 5px;
         text-transform: uppercase;
+        height: 5%;
         .header {
             font-size: $heading;
         }
@@ -24,6 +25,14 @@
             float: right;
             margin: 0 5px;
             cursor: pointer;
+            &.disabled {
+                cursor: default;
+                opacity: 0.5;
+            }
+            &.large {
+                font-size: 18px;
+                line-height: 18px;
+            }
         }
         &.status-bar {
             bottom: 0;
@@ -43,11 +52,33 @@
     }
 }
 
-.chart-container {
+.book-container {
     display: flex;
     flex-direction: row;
     position: relative;
     justify-content: center;
+    width: 100%;
+    height: 90%;
+    min-height: 90%;
+    .charts-container {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+        height: calc(100% + 20px);
+        padding-top: 20px;
+        .chart {
+            display: flex;
+            flex-direction: column;
+            width: 50%;
+            overflow: hidden;
+            &.left-chart {
+                align-items: flex-end;
+            }
+            &.right-chart {
+                align-items: flex-start;
+            }
+        }
+    }
     .table-container {
         position: absolute;
         top: 0;
@@ -55,6 +86,7 @@
         display: flex;
         flex-direction: row;
         width: 100%;
+        height: 90%;
     }
 }
 
@@ -69,5 +101,17 @@
     }
     label {
         font-weight: normal;
+    }
+}
+
+nav {
+    height: 8vh;
+    background-color: $primary-background-color;
+    box-shadow: 0 0 10px 2px #000;
+    .logo {
+        font-size: $logo-font;
+        color: $font-color;
+        margin: 0 10px;
+        line-height: 8vh;
     }
 }
